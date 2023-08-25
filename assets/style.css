@@ -106,7 +106,6 @@ body {
 	content: "";
 	display: block;
 	padding-bottom: 100%;
-
 }
 .gallery-item {
 	position: absolute;
@@ -135,14 +134,12 @@ body {
 	font-family: Spectral;
 	font-style: italic;
 	font-weight: 300;
-
 }
 .quote__author {
 	font-family: Spectral;
 	font-weight: 800;
 	font-size: 22px;
 }
-
 #services {
 	margin: auto;
 	background-color: #A8D5D8 ;
@@ -239,10 +236,12 @@ input[type="submit"] {
 		width: 100%;
 	}
 }
-.keyword {
+.bold-keyword {
 	font-family: 'Spectral';
-	font-weight: normal;
 	font-style: italic;
+}
+.keyword {
+	font-weight: normal;
 }
 @media all and (max-width: 1000px) {
 	#about{
