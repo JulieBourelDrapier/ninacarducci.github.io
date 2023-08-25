@@ -12,7 +12,7 @@ body {
 	top:0;
 	z-index: 1000;
 	display: flex;
-	justify-content: space-between;
+	/* justify-content: space-between; */
 	/* padding-inline: 100px;
 	padding-block: 30px; */
 	align-items: center;
@@ -310,7 +310,7 @@ input[type="submit"] {
 		/* padding: 0 0 0 0; */
 	}
 	.top-header .nav li {
-		flex: 1;
+		/* flex: 1; */
 		padding-block: 1em;
 		text-align: center;
 	}
