@@ -19,6 +19,7 @@ body {
 }
 .top-header .name {
 	font-size: 26px;
+	margin: 20px;
 }
 .nav ul {
 	display: flex;
@@ -304,6 +305,9 @@ input[type="submit"] {
 	.top-header {
 		flex-direction: column;
 		padding-inline: 0;
+		justify-content: space-between;
+	/* padding-inline: 100px;
+	padding-block: 30px; */
 	}
 	.top-header .nav, .top-header .nav ul {
 		width: 100%;
