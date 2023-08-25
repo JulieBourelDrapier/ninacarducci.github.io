@@ -239,6 +239,12 @@ input[type="submit"] {
 		width: 100%;
 	}
 }
+.keyword {
+	font-family: 'Spectral';
+	font-weight: 800;
+	font-style: italic;
+	color: blue;
+}
 @media all and (max-width: 1000px) {
 	#about{
 		flex-direction: column;
@@ -295,12 +301,7 @@ input[type="submit"] {
 		z-index: -1;
 	}
 }
-.keyword {
-	font-family: 'Spectral';
-	font-weight: 800;
-	font-style: italic;
-	color: blue;
-}
+
 @media all and (max-width: 650px) {
 	.top-header {
 		flex-direction: column;
