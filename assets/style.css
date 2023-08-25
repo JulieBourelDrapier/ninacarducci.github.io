@@ -1,6 +1,6 @@
 body {
-	max-width: 1920px;
-	margin: auto;
+	/* max-width: 1920px; */
+	/* margin: auto; */
 }
 * {
 	font-family: 'Inter';
@@ -13,8 +13,8 @@ body {
 	z-index: 1000;
 	display: flex;
 	justify-content: space-between;
-	padding-inline: 100px;
-	padding-block: 30px;
+	/* padding-inline: 100px;
+	padding-block: 30px; */
 	align-items: center;
 }
 .top-header .name {
@@ -27,7 +27,7 @@ body {
 	margin-bottom: 0;
 }
 .nav li {
-	padding-inline: 10px;
+	/* padding-inline: 10px; */
 }
 .nav a {
 	text-decoration: none;
@@ -159,7 +159,6 @@ body {
 	justify-content: space-between;
 	display: flex;
 	padding : 2em 0;
-
 }
 .service {
 	background-color: white;
@@ -308,7 +307,7 @@ input[type="submit"] {
 	}
 	.top-header .nav, .top-header .nav ul {
 		width: 100%;
-		padding: 0 0 0 0;
+		/* padding: 0 0 0 0; */
 	}
 	.top-header .nav li {
 		flex: 1;
