@@ -295,7 +295,7 @@ input[type="submit"] {
 		z-index: -1;
 	}
 }
-strong {
+.keywords {
 	font-weight: normal;
 }
 @media all and (max-width: 650px) {
