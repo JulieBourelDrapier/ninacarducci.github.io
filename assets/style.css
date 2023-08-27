@@ -300,8 +300,8 @@ input[type="submit"] {
 		z-index: -1;
 	}
 }
-
-@media all and (max-width: 650px) {
+/* 
+@media all and (max-width: 650px) { */
 	.top-header {
 		flex-direction: column;
 		padding-inline: 0;
@@ -309,6 +309,7 @@ input[type="submit"] {
 	/* padding-inline: 100px;
 	padding-block: 30px; */
 	}
+	@media all and (max-width: 650px) {
 	.top-header .nav, .top-header .nav ul {
 		width: 100%;
 		/* padding: 0 0 0 0; */
