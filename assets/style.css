@@ -337,5 +337,6 @@ input[type="submit"] {
 @media all and (min-width: 650px) {
 	.nav li {
 	padding-inline: 10px;
+	font-size: 16px;
 }	
 }
