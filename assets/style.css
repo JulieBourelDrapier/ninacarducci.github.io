@@ -288,14 +288,14 @@ input[type="submit"] {
 		z-index: -1;
 	}
 }
-@media all and (max-width: 650px) { 
 	.top-header {
 		flex-direction: column;
 		padding-inline: 0;
-		/* justify-content: space-between;
+		justify-content: space-between;
 	  padding-inline: 100px;
-	padding-block: 30px; */
+	  padding-block: 30px;
 	}
+	@media all and (max-width: 650px) { 
 	.top-header .nav, .top-header .nav ul {
 		width: 100%;
 		padding: 0 0 0 0;
@@ -325,9 +325,9 @@ input[type="submit"] {
 		width: 80%;
 	}
 }
-/* @media screen and (min-width: 650px) {
+@media screen and (min-width: 650px) {
 	.nav li {
 	padding-inline: 10px;
 	font-size: 16px;
 }	
-} */
+}
