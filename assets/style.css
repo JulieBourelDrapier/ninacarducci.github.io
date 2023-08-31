@@ -18,7 +18,7 @@ body {
 }
 .top-header .name {
 	font-size: 26px;
-	/* margin: 20px; add&dlt*/
+	margin: 20px;
 }
 .nav ul {
 	display: flex;
