@@ -55,9 +55,9 @@ body {
 	margin: 0 20px;
 	z-index: 0;
 }
-.picture img {
+/* .picture img {
 	width: 100%;
-}
+} */
 #about-me {
 	flex: 2
 }
