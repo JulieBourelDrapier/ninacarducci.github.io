@@ -110,6 +110,8 @@ body {
 	height: 100%;
 	object-fit: cover;
 	padding: .5em;
+	display: flex;
+  aspect-ratio: attr(width) / attr(height);
 }
 .mg-prev, .mg-next {
 	width: 30px;
