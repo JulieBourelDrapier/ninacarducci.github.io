@@ -18,30 +18,36 @@
 
 
 	<script type="application/ld+json">
-	{
+		{
 			"@context": "https://schema.org",
-			"@type": "Service",
-			"serviceType": "Photographer",
-			"provider": {
-				"@type": "LocalBusiness",
-				"name": "Nina Carducci"
-			},
-			"areaServed": "Regions of France",
-			"name": "Nouvelle-Aquitaine, île de France"
+			"@type": "PhotographStudio",
+			"name": "Nina Carducci",
 			"address": {
 				"@type": "PostalAddress",
+				"streetAddress": "68 avenue Alsace-Lorraine",
 				"addressLocality": "Bordeaux",
 				"addressRegion": "Aquitaine",
 				"postalCode": "33200",
-				"streetAddress": "68 avenue Alsace-Lorraine"
+				"addressCountry": "France"
 			},
-			"openingHours": "Mo-fr 10:00-19:00",
-			"image": "./assets/images/camera.webp",
-			"jobTitle": "Photographer",
-			"name": "Nina Carducci",
-			"telephone": "05 56 67 78 89",
-			"url": "https://julieboureldrapier.github.io/ninacarducci.github.io"
-	}
+			"telephone": "+33 5 56 67 78 89",
+			"url": "https://julieboureldrapier.github.io/ninacarducci.github.io",
+			"openingHoursSpecification": [
+				{
+					"@type": "OpeningHoursSpecification",
+					"dayOfWeek": [
+						"Monday",
+						"Tuesday",
+						"Wednesday",
+						"Thursday",
+						"Friday"
+					],
+					"opens": "10:00",
+					"closes": "19:00"
+				}
+			]
+		}
+
 		</script>
 </head>
 <body>
