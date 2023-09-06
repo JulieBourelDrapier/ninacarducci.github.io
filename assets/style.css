@@ -218,7 +218,7 @@ input[type="submit"] {
 	background-color: #BEB45A;
 	padding: .5em 1em
 }
-@media all and (max-width: 1180px) {
+@media screen and (max-width: 1180px) {
 	.picture {
 		flex : 2;
 	}
@@ -296,7 +296,7 @@ input[type="submit"] {
 	  padding-inline: 100px;
 	  padding-block: 30px;
 	}
-	@media all and (max-width: 650px) { 
+	@media screen and (max-width: 650px) { 
 	.top-header .nav, .top-header .nav ul {
 		width: 100%;
 		padding: 0 0 0 0;
