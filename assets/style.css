@@ -12,7 +12,6 @@ body {
 	top:0;
 	z-index: 1000;
 	display: flex;
-	/* justify-content: space-between;dlt */
 	padding-block: 30px;
 	align-items: center;
 }
@@ -55,9 +54,6 @@ body {
 	margin: 0 20px;
 	z-index: 0;
 }
-/* .picture img {
-	width: 100%;
-} */
 #about-me {
 	flex: 2
 }
@@ -76,9 +72,6 @@ body {
 	width: 80%;
 	font-size: 14px;
 }
-/* #gallery {
-	min-height: 100vh;
-} */
 .title{
 	text-align: center;
 	padding-block: 2em;
@@ -234,7 +227,6 @@ input[type="submit"] {
 		width: 100%;
 	}
 }
-
 @media screen and (max-width: 1000px) {
 	#about{
 		flex-direction: column;
