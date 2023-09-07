@@ -12,7 +12,6 @@ body {
 	top:0;
 	z-index: 1000;
 	display: flex;
-	flex-direction: row;
 	/* justify-content: space-between;dlt */
 	padding-block: 30px;
 	align-items: center;
@@ -292,7 +291,7 @@ input[type="submit"] {
 	}
 }
 	.top-header {
-		flex-direction: column;
+		flex-direction: row;
 		padding-inline: 0;
 		justify-content: space-between;
 	  padding-inline: 100px;
