@@ -3,26 +3,21 @@
   typeof define === 'function' && define.amd ? define(factory) :
   (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.bootstrap = factory());
 })(this, (function () { 'use strict';
-
   const MAX_UID = 1000000;
   const MILLISECONDS_MULTIPLIER = 1000;
-  const TRANSITION_END = 'transitionend'; // Shoutout AngusCroll (https://goo.gl/pxwQGp)
-
+  const TRANSITION_END = 'transitionend';
   const toType = obj => {
     if (obj === null || obj === undefined) {
       return `${obj}`;
     }
-
     return {}.toString.call(obj).match(/\s([a-z]+)/i)[1].toLowerCase();
   };
-  
   const getUID = prefix => {
     do {
       prefix += Math.floor(Math.random() * MAX_UID);
     } while (document.getElementById(prefix));
     return prefix;
   };
-
   const getSelector = element => {
     let selector = element.getAttribute('data-bs-target');
     if (!selector || selector === '#') {
@@ -37,7 +32,6 @@
     }
     return selector;
   };
-
   const getSelectorFromElement = element => {
     const selector = getSelector(element);
     if (selector) {
@@ -50,7 +44,6 @@
     const selector = getSelector(element);
     return selector ? document.querySelector(selector) : null;
   };
-
   const getTransitionDurationFromElement = element => {
     if (!element) {
       return 0;
@@ -64,16 +57,13 @@
     if (!floatTransitionDuration && !floatTransitionDelay) {
       return 0;
     }
-
     transitionDuration = transitionDuration.split(',')[0];
     transitionDelay = transitionDelay.split(',')[0];
     return (Number.parseFloat(transitionDuration) + Number.parseFloat(transitionDelay)) * MILLISECONDS_MULTIPLIER;
   };
-
   const triggerTransitionEnd = element => {
     element.dispatchEvent(new Event(TRANSITION_END));
   };
-
   const isElement$1 = obj => {
     if (!obj || typeof obj !== 'object') {
       return false;
@@ -83,7 +73,6 @@
     }
     return typeof obj.nodeType !== 'undefined';
   };
-
   const getElement = obj => {
     if (isElement$1(obj)) {
       return obj.jquery ? obj[0] : obj;
@@ -93,26 +82,22 @@
     }
     return null;
   };
-
   const typeCheckConfig = (componentName, config, configTypes) => {
     Object.keys(configTypes).forEach(property => {
       const expectedTypes = configTypes[property];
       const value = config[property];
       const valueType = value && isElement$1(value) ? 'element' : toType(value);
-
       if (!new RegExp(expectedTypes).test(valueType)) {
         throw new TypeError(`${componentName.toUpperCase()}: Option "${property}" provided type "${valueType}" but expected type "${expectedTypes}".`);
       }
     });
   };
-
   const isVisible = element => {
     if (!isElement$1(element) || element.getClientRects().length === 0) {
       return false;
     }
     return getComputedStyle(element).getPropertyValue('visibility') === 'visible';
   };
-
   const isDisabled = element => {
     if (!element || element.nodeType !== Node.ELEMENT_NODE) {
       return true;
@@ -125,7 +110,6 @@
     }
     return element.hasAttribute('disabled') && element.getAttribute('disabled') !== 'false';
   };
-
   const findShadowRoot = element => {
     if (!document.documentElement.attachShadow) {
       return null;
@@ -142,13 +126,10 @@
     }
     return findShadowRoot(element.parentNode);
   };
-
   const noop = () => {};
-
   const reflow = element => {
     element.offsetHeight;
   };
-
   const getjQuery = () => {
     const {
       jQuery
@@ -159,9 +140,7 @@
     }
     return null;
   };
-
   const DOMContentLoadedCallbacks = [];
-
   const onDOMContentLoaded = callback => {
     if (document.readyState === 'loading') {
       if (!DOMContentLoadedCallbacks.length) {
@@ -174,9 +153,7 @@
       callback();
     }
   };
-
   const isRTL = () => document.documentElement.dir === 'rtl';
-
   const defineJQueryPlugin = plugin => {
     onDOMContentLoaded(() => {
       const $ = getjQuery();
@@ -192,19 +169,16 @@
       }
     });
   };
-
   const execute = callback => {
     if (typeof callback === 'function') {
       callback();
     }
   };
-
   const executeAfterTransition = (callback, transitionElement, waitForTransition = true) => {
     if (!waitForTransition) {
       execute(callback);
       return;
     }
-
     const durationPadding = 5;
     const emulatedDuration = getTransitionDurationFromElement(transitionElement) + durationPadding;
     let called = false;
@@ -218,7 +192,6 @@
       transitionElement.removeEventListener(TRANSITION_END, handler);
       execute(callback);
     };
-
     transitionElement.addEventListener(TRANSITION_END, handler);
     setTimeout(() => {
       if (!called) {
@@ -228,8 +201,7 @@
   };
 
   const getNextActiveElement = (list, activeElement, shouldGetNext, isCycleAllowed) => {
-    let index = list.indexOf(activeElement); // if the element does not exist in the list return an element depending on the direction and if cycle is allowed
-
+    let index = list.indexOf(activeElement);
     if (index === -1) {
       return list[!shouldGetNext && isCycleAllowed ? list.length - 1 : 0];
     }
@@ -240,7 +212,6 @@
     }
     return list[Math.max(0, Math.min(index, listLength - 1))];
   };
-
   const namespaceRegex = /[^.]*(?=\..*)\.|.*/;
   const stripNameRegex = /\..*/;
   const stripUidRegex = /::\d+$/;
@@ -252,18 +223,15 @@
   };
   const customEventsRegex = /^(mouseenter|mouseleave)/i;
   const nativeEvents = new Set(['click', 'dblclick', 'mouseup', 'mousedown', 'contextmenu', 'mousewheel', 'DOMMouseScroll', 'mouseover', 'mouseout', 'mousemove', 'selectstart', 'selectend', 'keydown', 'keypress', 'keyup', 'orientationchange', 'touchstart', 'touchmove', 'touchend', 'touchcancel', 'pointerdown', 'pointermove', 'pointerup', 'pointerleave', 'pointercancel', 'gesturestart', 'gesturechange', 'gestureend', 'focus', 'blur', 'change', 'reset', 'select', 'submit', 'focusin', 'focusout', 'load', 'unload', 'beforeunload', 'resize', 'move', 'DOMContentLoaded', 'readystatechange', 'error', 'abort', 'scroll']);
-
   function getUidEvent(element, uid) {
     return uid && `${uid}::${uidEvent++}` || element.uidEvent || uidEvent++;
   }
-
   function getEvent(element) {
     const uid = getUidEvent(element);
     element.uidEvent = uid;
     eventRegistry[uid] = eventRegistry[uid] || {};
     return eventRegistry[uid];
   }
-
   function bootstrapHandler(element, fn) {
     return function handler(event) {
       event.delegateTarget = element;
@@ -273,7 +241,6 @@
       return fn.apply(element, [event]);
     };
   }
-
   function bootstrapDelegationHandler(element, selector, fn) {
     return function handler(event) {
       const domElements = element.querySelectorAll(selector);
@@ -293,7 +260,6 @@
       return null;
     };
   }
-
   function findHandler(events, handler, delegationSelector = null) {
     const uidEventList = Object.keys(events);
     for (let i = 0, len = uidEventList.length; i < len; i++) {
@@ -304,7 +270,6 @@
     }
     return null;
   }
-
   function normalizeParams(originalTypeEvent, handler, delegationFn) {
     const delegation = typeof handler === 'string';
     const originalHandler = delegation ? delegationFn : handler;
@@ -338,7 +303,6 @@
         handler = wrapFn(handler);
       }
     }
-
     const [delegation, originalHandler, typeEvent] = normalizeParams(originalTypeEvent, handler, delegationFn);
     const events = getEvent(element);
     const handlers = events[typeEvent] || (events[typeEvent] = {});
@@ -366,7 +330,6 @@
     element.removeEventListener(typeEvent, fn, Boolean(delegationSelector));
     delete events[typeEvent][fn.uidEvent];
   }
-
   function removeNamespacedHandlers(element, events, typeEvent, namespace) {
     const storeElementEvent = events[typeEvent] || {};
     Object.keys(storeElementEvent).forEach(handlerKey => {
@@ -376,12 +339,10 @@
       }
     });
   }
-
   function getTypeEvent(event) {
     event = event.replace(stripNameRegex, '');
     return customEvents[event] || event;
   }
-
   const EventHandler = {
     on(element, event, handler, delegationFn) {
       addHandler(element, event, handler, delegationFn, false);
@@ -409,7 +370,6 @@
           removeNamespacedHandlers(element, events, elementEvent, originalTypeEvent.slice(1));
         });
       }
-
       const storeElementEvent = events[typeEvent] || {};
       Object.keys(storeElementEvent).forEach(keyHandlers => {
         const handlerKey = keyHandlers.replace(stripUidRegex, '');
@@ -419,7 +379,6 @@
         }
       });
     },
-
     trigger(element, event, args) {
       if (typeof event !== 'string' || !element) {
         return null;
@@ -470,7 +429,6 @@
       return evt;
     }
   };
-
   const elementMap = new Map();
   const Data = {
     set(element, key, instance) {
@@ -491,7 +449,6 @@
       }
       return null;
     },
-
     remove(element, key) {
       if (!elementMap.has(element)) {
         return;
@@ -503,9 +460,7 @@
       }
     }
   };
-
   const VERSION = '5.1.3';
-
   class BaseComponent {
     constructor(element) {
       element = getElement(element);
@@ -515,7 +470,6 @@
       this._element = element;
       Data.set(this._element, this.constructor.DATA_KEY, this);
     }
-
     dispose() {
       Data.remove(this._element, this.constructor.DATA_KEY);
       EventHandler.off(this._element, this.constructor.EVENT_KEY);
@@ -526,7 +480,6 @@
     _queueCallback(callback, element, isAnimated = true) {
       executeAfterTransition(callback, element, isAnimated);
     }
-   
     static getInstance(element) {
       return Data.get(getElement(element), this.DATA_KEY);
     }
@@ -545,8 +498,7 @@
     static get EVENT_KEY() {
       return `.${this.DATA_KEY}`;
     }
-  }
-
+  } 
   const enableDismissTrigger = (component, method = 'hide') => {
     const clickEvent = `click.dismiss${component.EVENT_KEY}`;
     const name = component.NAME;
@@ -562,7 +514,6 @@
       instance[method]();
     });
   };
-
   const NAME$d = 'alert';
   const DATA_KEY$c = 'bs.alert';
   const EVENT_KEY$c = `.${DATA_KEY$c}`;
@@ -570,12 +521,10 @@
   const EVENT_CLOSED = `closed${EVENT_KEY$c}`;
   const CLASS_NAME_FADE$5 = 'fade';
   const CLASS_NAME_SHOW$8 = 'show';
-
   class Alert extends BaseComponent {
     static get NAME() {
       return NAME$d;
     }
-
     close() {
       const closeEvent = EventHandler.trigger(this._element, EVENT_CLOSE);
       if (closeEvent.defaultPrevented) {
@@ -585,13 +534,11 @@
       const isAnimated = this._element.classList.contains(CLASS_NAME_FADE$5);
       this._queueCallback(() => this._destroyElement(), this._element, isAnimated);
     } 
-
     _destroyElement() {
       this._element.remove();
       EventHandler.trigger(this._element, EVENT_CLOSED);
       this.dispose();
     } 
-
     static jQueryInterface(config) {
       return this.each(function () {
         const data = Alert.getOrCreateInstance(this);
@@ -606,9 +553,7 @@
     }
   }
   enableDismissTrigger(Alert, 'close');
- 
   defineJQueryPlugin(Alert);
-
   const NAME$c = 'button';
   const DATA_KEY$b = 'bs.button';
   const EVENT_KEY$b = `.${DATA_KEY$b}`;
@@ -616,7 +561,6 @@
   const CLASS_NAME_ACTIVE$3 = 'active';
   const SELECTOR_DATA_TOGGLE$5 = '[data-bs-toggle="button"]';
   const EVENT_CLICK_DATA_API$6 = `click${EVENT_KEY$b}${DATA_API_KEY$7}`;
-
   class Button extends BaseComponent {
     static get NAME() {
       return NAME$c;
@@ -624,7 +568,6 @@
     toggle() {
       this._element.setAttribute('aria-pressed', this._element.classList.toggle(CLASS_NAME_ACTIVE$3));
     }
-
     static jQueryInterface(config) {
       return this.each(function () {
         const data = Button.getOrCreateInstance(this);
@@ -745,8 +688,7 @@
       const focusables = ['a', 'button', 'input', 'textarea', 'select', 'details', '[tabindex]', '[contenteditable="true"]'].map(selector => `${selector}:not([tabindex^="-"])`).join(', ');
       return this.find(focusables, element).filter(el => !isDisabled(el) && isVisible(el));
     }
-  };
-
+  }; 
   const NAME$b = 'carousel';
   const DATA_KEY$a = 'bs.carousel';
   const EVENT_KEY$a = `.${DATA_KEY$a}`;
@@ -811,7 +753,6 @@
   const SELECTOR_DATA_RIDE = '[data-bs-ride="carousel"]';
   const POINTER_TYPE_TOUCH = 'touch';
   const POINTER_TYPE_PEN = 'pen';
-
   class Carousel extends BaseComponent {
     constructor(element, config) {
       super(element);
@@ -835,7 +776,6 @@
     static get NAME() {
       return NAME$b;
     } 
-
     next() {
       this._slide(ORDER_NEXT);
     }
@@ -872,7 +812,6 @@
         this._interval = setInterval((document.visibilityState ? this.nextWhenVisible : this.next).bind(this), this._config.interval);
       }
     }
-
     to(index) {
       this._activeElement = SelectorEngine.findOne(SELECTOR_ACTIVE_ITEM, this._element);
       const activeIndex = this._getItemIndex(this._activeElement);
@@ -891,7 +830,6 @@
       const order = index > activeIndex ? ORDER_NEXT : ORDER_PREV;
       this._slide(order, this._items[index]);
     }
-
     _getConfig(config) {
       config = { ...Default$a,
         ...Manipulator.getDataAttributes(this._element),
@@ -951,7 +889,6 @@
           this.touchTimeout = setTimeout(event => this.cycle(event), TOUCHEVENT_COMPAT_WAIT + this._config.interval);
         }
       };
-
       SelectorEngine.find(SELECTOR_ITEM_IMG, this._element).forEach(itemImg => {
         EventHandler.on(itemImg, EVENT_DRAG_START, event => event.preventDefault());
       });
@@ -965,7 +902,6 @@
         EventHandler.on(this._element, EVENT_TOUCHEND, event => end(event));
       }
     }
-
     _keydown(event) {
       if (/input|textarea/i.test(event.target.tagName)) {
         return;
@@ -976,7 +912,6 @@
         this._slide(direction);
       }
     }
-
     _getItemIndex(element) {
       this._items = element && element.parentNode ? SelectorEngine.find(SELECTOR_ITEM, element.parentNode) : [];
       return this._items.indexOf(element);
@@ -986,7 +921,6 @@
       const isNext = order === ORDER_NEXT;
       return getNextActiveElement(this._items, activeElement, isNext, this._config.wrap);
     }
-
     _triggerSlideEvent(relatedTarget, eventDirectionName) {
       const targetIndex = this._getItemIndex(relatedTarget);
       const fromIndex = this._getItemIndex(SelectorEngine.findOne(SELECTOR_ACTIVE_ITEM, this._element));
@@ -997,7 +931,6 @@
         to: targetIndex
       });
     }
-
     _setActiveIndicatorElement(element) {
       if (this._indicatorsElement) {
         const activeIndicator = SelectorEngine.findOne(SELECTOR_ACTIVE$1, this._indicatorsElement);
@@ -1013,7 +946,6 @@
         }
       }
     }
-
     _updateInterval() {
       const element = this._activeElement || SelectorEngine.findOne(SELECTOR_ACTIVE_ITEM, this._element);
       if (!element) {
@@ -1027,7 +959,6 @@
         this._config.interval = this._config.defaultInterval || this._config.interval;
       }
     }
-
     _slide(directionOrOrder, element) {
       const order = this._directionToOrder(directionOrOrder);
       const activeElement = SelectorEngine.findOne(SELECTOR_ACTIVE_ITEM, this._element);
@@ -1155,7 +1086,6 @@
       event.preventDefault();
     }
   }
-
   EventHandler.on(document, EVENT_CLICK_DATA_API$5, SELECTOR_DATA_SLIDE, Carousel.dataApiClickHandler);
   EventHandler.on(window, EVENT_LOAD_DATA_API$2, () => {
     const carousels = SelectorEngine.find(SELECTOR_DATA_RIDE);
@@ -1192,7 +1122,6 @@
   const HEIGHT = 'height';
   const SELECTOR_ACTIVES = '.collapse.show, .collapse.collapsing';
   const SELECTOR_DATA_TOGGLE$4 = '[data-bs-toggle="collapse"]';
- 
   class Collapse extends BaseComponent {
     constructor(element, config) {
       super(element);
@@ -1217,7 +1146,6 @@
         this.toggle();
       }
     }
-
     static get Default() {
       return Default$9;
     }
@@ -1354,7 +1282,6 @@
         elem.setAttribute('aria-expanded', isOpen);
       });
     }
-
     static jQueryInterface(config) {
       return this.each(function () {
         const _config = {};
@@ -1371,7 +1298,6 @@
       });
     }
   }
- 
   EventHandler.on(document, EVENT_CLICK_DATA_API$4, SELECTOR_DATA_TOGGLE$4, function (event) {
     // preventDefault only for <a> elements (which change the URL) not inside the collapsible element
     if (event.target.tagName === 'A' || event.delegateTarget && event.delegateTarget.tagName === 'A') {
@@ -1385,8 +1311,6 @@
       }).toggle();
     });
   });
-  
-
   defineJQueryPlugin(Collapse);
   var top = 'top';
   var bottom = 'bottom';
@@ -1416,11 +1340,9 @@
   var write = 'write';
   var afterWrite = 'afterWrite';
   var modifierPhases = [beforeRead, read, afterRead, beforeMain, main, afterMain, beforeWrite, write, afterWrite];
-
   function getNodeName(element) {
     return element ? (element.nodeName || '').toLowerCase() : null;
   }
-
   function getWindow(node) {
     if (node == null) {
       return window;
@@ -1436,7 +1358,6 @@
     var OwnElement = getWindow(node).Element;
     return node instanceof OwnElement || node instanceof Element;
   }
-
   function isHTMLElement(node) {
     var OwnElement = getWindow(node).HTMLElement;
     return node instanceof OwnElement || node instanceof HTMLElement;
@@ -1449,7 +1370,6 @@
     var OwnElement = getWindow(node).ShadowRoot;
     return node instanceof OwnElement || node instanceof ShadowRoot;
   }
-
   function applyStyles(_ref) {
     var state = _ref.state;
     Object.keys(state.elements).forEach(function (name) {
@@ -1470,7 +1390,6 @@
       });
     });
   }
-
   function effect$2(_ref2) {
     var state = _ref2.state;
     var initialStyles = {
@@ -1509,7 +1428,6 @@
       });
     };
   }
-
   const applyStyles$1 = {
     name: 'applyStyles',
     enabled: true,
@@ -1522,7 +1440,6 @@
   function getBasePlacement(placement) {
     return placement.split('-')[0];
   }
-
   function getBoundingClientRect(element,
   includeScale) {
     var rect = element.getBoundingClientRect();
@@ -1539,7 +1456,6 @@
       y: rect.top / scaleY
     };
   }
-
   function getLayoutRect(element) {
     var clientRect = getBoundingClientRect(element);
     var width = element.offsetWidth;
@@ -1557,7 +1473,6 @@
       height: height
     };
   }
-
   function contains(parent, child) {
     var rootNode = child.getRootNode && child.getRootNode();
     if (parent.contains(child)) {
@@ -1574,15 +1489,12 @@
       }
     return false;
   }
-
   function getComputedStyle$1(element) {
     return getWindow(element).getComputedStyle(element);
   }
-
   function isTableElement(element) {
     return ['table', 'td', 'th'].indexOf(getNodeName(element)) >= 0;
   }
-
   function getDocumentElement(element) {
     // $FlowFixMe[incompatible-return]: assume body is always available
     return ((isElement(element) ? element.ownerDocument : // $FlowFixMe[prop-missing]
@@ -1600,7 +1512,6 @@
       getDocumentElement(element)
     );
   }
-
   function getTrueOffsetParent(element) {
     if (!isHTMLElement(element) ||
     getComputedStyle$1(element).position === 'fixed') {
@@ -1608,8 +1519,6 @@
     }
     return element.offsetParent;
   }
-
-
   function getContainingBlock(element) {
     var isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') !== -1;
     var isIE = navigator.userAgent.indexOf('Trident') !== -1;
@@ -1619,7 +1528,6 @@
         return null;
       }
     }
-
     var currentNode = getParentNode(element);
 
     while (isHTMLElement(currentNode) && ['html', 'body'].indexOf(getNodeName(currentNode)) < 0) {
@@ -1632,7 +1540,6 @@
     }
     return null;
   }
-
   function getOffsetParent(element) {
     var window = getWindow(element);
     var offsetParent = getTrueOffsetParent(element);
@@ -1644,18 +1551,15 @@
     }
     return offsetParent || getContainingBlock(element) || window;
   }
-
   function getMainAxisFromPlacement(placement) {
     return ['top', 'bottom'].indexOf(placement) >= 0 ? 'x' : 'y';
   }
   var max = Math.max;
   var min = Math.min;
   var round = Math.round;
-
   function within(min$1, value, max$1) {
     return max(min$1, min(value, max$1));
   }
-
   function getFreshSideObject() {
     return {
       top: 0,
@@ -1664,25 +1568,21 @@
       left: 0
     };
   }
-
   function mergePaddingObject(paddingObject) {
     return Object.assign({}, getFreshSideObject(), paddingObject);
   }
-
   function expandToHashMap(value, keys) {
     return keys.reduce(function (hashMap, key) {
       hashMap[key] = value;
       return hashMap;
     }, {});
   }
-
   var toPaddingObject = function toPaddingObject(padding, state) {
     padding = typeof padding === 'function' ? padding(Object.assign({}, state.rects, {
       placement: state.placement
     })) : padding;
     return mergePaddingObject(typeof padding !== 'number' ? padding : expandToHashMap(padding, basePlacements));
   };
-
   function arrow(_ref) {
     var _state$modifiersData$;
     var state = _ref.state,
@@ -1713,7 +1613,6 @@
     var axisProp = axis;
     state.modifiersData[name] = (_state$modifiersData$ = {}, _state$modifiersData$[axisProp] = offset, _state$modifiersData$.centerOffset = offset - center, _state$modifiersData$);
   }
-
   function effect$1(_ref2) {
     var state = _ref2.state,
         options = _ref2.options;
@@ -1733,7 +1632,6 @@
     }
     state.elements.arrow = arrowElement;
   } 
-
   const arrow$1 = {
     name: 'arrow',
     enabled: true,
@@ -1743,18 +1641,15 @@
     requires: ['popperOffsets'],
     requiresIfExists: ['preventOverflow']
   };
-
   function getVariation(placement) {
     return placement.split('-')[1];
   }
-
   var unsetSides = {
     top: 'auto',
     right: 'auto',
     bottom: 'auto',
     left: 'auto'
   }; 
-
   function roundOffsetsByDPR(_ref) {
     var x = _ref.x,
         y = _ref.y;
@@ -1765,7 +1660,6 @@
       y: round(round(y * dpr) / dpr) || 0
     };
   }
-
   function mapToStyles(_ref2) {
     var _Object$assign2;
     var popper = _ref2.popper,
@@ -1821,7 +1715,6 @@
     }
     return Object.assign({}, commonStyles, (_Object$assign2 = {}, _Object$assign2[sideY] = hasY ? y + "px" : '', _Object$assign2[sideX] = hasX ? x + "px" : '', _Object$assign2.transform = '', _Object$assign2));
   }
-
   function computeStyles(_ref4) {
     var state = _ref4.state,
         options = _ref4.options;
@@ -1858,7 +1751,6 @@
       'data-popper-placement': state.placement
     });
   }
-
   const computeStyles$1 = {
     name: 'computeStyles',
     enabled: true,
@@ -1869,7 +1761,6 @@
   var passive = {
     passive: true
   };
-
   function effect(_ref) {
     var state = _ref.state,
         instance = _ref.instance,
@@ -1899,7 +1790,6 @@
       }
     };
   }
-
   const eventListeners = {
     name: 'eventListeners',
     enabled: true,
@@ -1908,7 +1798,6 @@
     effect: effect,
     data: {}
   };
-
   var hash$1 = {
     left: 'right',
     right: 'left',
@@ -1920,7 +1809,6 @@
       return hash$1[matched];
     });
   }
-
   var hash = {
     start: 'end',
     end: 'start'
@@ -1930,7 +1818,6 @@
       return hash[matched];
     });
   }
-
   function getWindowScroll(node) {
     var win = getWindow(node);
     var scrollLeft = win.pageXOffset;
@@ -1940,11 +1827,9 @@
       scrollTop: scrollTop
     };
   }
-
   function getWindowScrollBarX(element) {
     return getBoundingClientRect(getDocumentElement(element)).left + getWindowScroll(element).scrollLeft;
   }
-
   function getViewportRect(element) {
     var win = getWindow(element);
     var html = getDocumentElement(element);
@@ -1968,7 +1853,6 @@
       y: y
     };
   }
-
   function getDocumentRect(element) {
     var _element$ownerDocumen;
     var html = getDocumentElement(element);
@@ -1988,7 +1872,6 @@
       y: y
     };
   }
-
   function isScrollParent(element) {
     var _getComputedStyle = getComputedStyle$1(element),
         overflow = _getComputedStyle.overflow,
@@ -1996,7 +1879,6 @@
         overflowY = _getComputedStyle.overflowY;
     return /auto|scroll|overlay|hidden/.test(overflow + overflowY + overflowX);
   }
-
   function getScrollParent(node) {
     if (['html', 'body', '#document'].indexOf(getNodeName(node)) >= 0) {
       return node.ownerDocument.body;
@@ -2006,7 +1888,6 @@
     }
     return getScrollParent(getParentNode(node));
   }
-
   function listScrollParents(element, list) {
     var _element$ownerDocumen;
     if (list === void 0) {
@@ -2020,7 +1901,6 @@
     return isBody ? updatedList : // $FlowFixMe[incompatible-call]: isBody tells us target will be an HTMLElement here
     updatedList.concat(listScrollParents(getParentNode(target)));
   }
-
   function rectToClientRect(rect) {
     return Object.assign({}, rect, {
       left: rect.x,
@@ -2029,7 +1909,6 @@
       bottom: rect.y + rect.height
     });
   }
-
   function getInnerBoundingClientRect(element) {
     var rect = getBoundingClientRect(element);
     rect.top = rect.top + element.clientTop;
@@ -2042,11 +1921,9 @@
     rect.y = rect.top;
     return rect;
   }
-
   function getClientRectFromMixedType(element, clippingParent) {
     return clippingParent === viewport ? rectToClientRect(getViewportRect(element)) : isHTMLElement(clippingParent) ? getInnerBoundingClientRect(clippingParent) : rectToClientRect(getDocumentRect(getDocumentElement(element)));
   } 
-
   function getClippingParents(element) {
     var clippingParents = listScrollParents(getParentNode(element));
     var canEscapeClipping = ['absolute', 'fixed'].indexOf(getComputedStyle$1(element).position) >= 0;
@@ -2058,7 +1935,6 @@
       return isElement(clippingParent) && contains(clippingParent, clipperElement) && getNodeName(clippingParent) !== 'body';
     });
   } 
-
   function getClippingRect(element, boundary, rootBoundary) {
     var mainClippingParents = boundary === 'clippingParents' ? getClippingParents(element) : [].concat(boundary);
     var clippingParents = [].concat(mainClippingParents, [rootBoundary]);
@@ -2077,7 +1953,6 @@
     clippingRect.y = clippingRect.top;
     return clippingRect;
   }
-
   function computeOffsets(_ref) {
     var reference = _ref.reference,
         element = _ref.element,
@@ -2118,7 +1993,6 @@
           y: reference.y
         };
     }
-
     var mainAxis = basePlacement ? getMainAxisFromPlacement(basePlacement) : null;
     if (mainAxis != null) {
       var len = mainAxis === 'y' ? 'height' : 'width';
@@ -2133,7 +2007,6 @@
     }
     return offsets;
   }
-
   function detectOverflow(state, options) {
     if (options === void 0) {
       options = {};
@@ -2182,7 +2055,6 @@
     }
     return overflowOffsets;
   }
-
   function computeAutoPlacement(state, options) {
     if (options === void 0) {
       options = {};
@@ -2218,7 +2090,6 @@
       return overflows[a] - overflows[b];
     });
   }
-
   function getExpandedFallbackPlacements(placement) {
     if (getBasePlacement(placement) === auto) {
       return [];
@@ -2226,7 +2097,6 @@
     var oppositePlacement = getOppositePlacement(placement);
     return [getOppositeVariationPlacement(placement), oppositePlacement, getOppositeVariationPlacement(oppositePlacement)];
   }
-
   function flip(_ref) {
     var state = _ref.state,
         options = _ref.options,
@@ -2299,7 +2169,6 @@
       }
       checksMap.set(placement, checks);
     }
-
     if (makeFallbackChecks) {
       var numberOfChecks = flipVariations ? 3 : 1;
       var _loop = function _loop(_i) {
@@ -2328,7 +2197,6 @@
       state.reset = true;
     }
   }
-
   const flip$1 = {
     name: 'flip',
     enabled: true,
@@ -2339,7 +2207,6 @@
       _skip: false
     }
   };
-
   function getSideOffsets(overflow, rect, preventedOffsets) {
     if (preventedOffsets === void 0) {
       preventedOffsets = {
@@ -2354,13 +2221,11 @@
       left: overflow.left - rect.width - preventedOffsets.x
     };
   }
-
   function isAnySideFullyClipped(overflow) {
     return [top, right, bottom, left].some(function (side) {
       return overflow[side] >= 0;
     });
   }
-
   function hide(_ref) {
     var state = _ref.state,
         name = _ref.name;
@@ -2388,7 +2253,6 @@
       'data-popper-escaped': hasPopperEscaped
     });
   }
-
   const hide$1 = {
     name: 'hide',
     enabled: true,
@@ -2396,7 +2260,6 @@
     requiresIfExists: ['preventOverflow'],
     fn: hide
   };
-
   function distanceAndSkiddingToXY(placement, rects, offset) {
     var basePlacement = getBasePlacement(placement);
     var invertDistance = [left, top].indexOf(basePlacement) >= 0 ? -1 : 1;
@@ -2417,7 +2280,6 @@
       y: distance
     };
   }
-
   function offset(_ref2) {
     var state = _ref2.state,
         options = _ref2.options,
@@ -2437,7 +2299,6 @@
     }
     state.modifiersData[name] = data;
   }
-
   const offset$1 = {
     name: 'offset',
     enabled: true,
@@ -2445,7 +2306,6 @@
     requires: ['popperOffsets'],
     fn: offset
   };
-
   function popperOffsets(_ref) {
     var state = _ref.state,
         name = _ref.name;
@@ -2456,7 +2316,6 @@
       placement: state.placement
     });
   }
-
   const popperOffsets$1 = {
     name: 'popperOffsets',
     enabled: true,
@@ -2464,11 +2323,9 @@
     fn: popperOffsets,
     data: {}
   };
-
   function getAltAxis(axis) {
     return axis === 'x' ? 'y' : 'x';
   }
-
   function preventOverflow(_ref) {
     var state = _ref.state,
         options = _ref.options,
@@ -2553,7 +2410,6 @@
     }
     state.modifiersData[name] = data;
   }
-
   const preventOverflow$1 = {
     name: 'preventOverflow',
     enabled: true,
@@ -2561,7 +2417,6 @@
     fn: preventOverflow,
     requiresIfExists: ['offset']
   };
-
   function getHTMLElementScroll(element) {
     return {
       scrollLeft: element.scrollLeft,
@@ -2576,15 +2431,12 @@
       return getHTMLElementScroll(node);
     }
   }
-
   function isElementScaled(element) {
     var rect = element.getBoundingClientRect();
     var scaleX = rect.width / element.offsetWidth || 1;
     var scaleY = rect.height / element.offsetHeight || 1;
     return scaleX !== 1 || scaleY !== 1;
   }
-
-
   function getCompositeRect(elementOrVirtualElement, offsetParent, isFixed) {
     if (isFixed === void 0) {
       isFixed = false;
@@ -2621,7 +2473,6 @@
       height: rect.height
     };
   }
-
   function order(modifiers) {
     var map = new Map();
     var visited = new Set();
@@ -2629,7 +2480,6 @@
     modifiers.forEach(function (modifier) {
       map.set(modifier.name, modifier);
     });
-
     function sort(modifier) {
       visited.add(modifier.name);
       var requires = [].concat(modifier.requires || [], modifier.requiresIfExists || []);
@@ -2643,7 +2493,6 @@
       });
       result.push(modifier);
     }
-
     modifiers.forEach(function (modifier) {
       if (!visited.has(modifier.name)) {
         // check for visited object
@@ -2652,7 +2501,6 @@
     });
     return result;
   }
-
   function orderModifiers(modifiers) {
     var orderedModifiers = order(modifiers);
     return modifierPhases.reduce(function (acc, phase) {
@@ -2661,7 +2509,6 @@
       }));
     }, []);
   }
-
   function debounce(fn) {
     var pending;
     return function () {
@@ -2677,7 +2524,6 @@
       return pending;
     };
   }
-
   function mergeByName(modifiers) {
     var merged = modifiers.reduce(function (merged, current) {
       var existing = merged[current.name];
@@ -2696,7 +2542,6 @@
     modifiers: [],
     strategy: 'absolute'
   };
-
   function areValidElements() {
     for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
       args[_key] = arguments[_key];
@@ -2705,7 +2550,6 @@
       return !(element && typeof element.getBoundingClientRect === 'function');
     });
   }
-
   function popperGenerator(generatorOptions) {
     if (generatorOptions === void 0) {
       generatorOptions = {};
@@ -2747,7 +2591,6 @@
           state.orderedModifiers = orderedModifiers.filter(function (m) {
             return m.enabled;
           });
-
           runModifierEffects();
           return instance.update();
         },
@@ -2810,7 +2653,6 @@
           options.onFirstUpdate(state);
         }
       });
-
       function runModifierEffects() {
         state.orderedModifiers.forEach(function (_ref3) {
           var name = _ref3.name,
@@ -2829,7 +2671,6 @@
           }
         });
       }
-
       function cleanupModifierEffects() {
         effectCleanupFns.forEach(function (fn) {
           return fn();
@@ -2889,7 +2730,6 @@
     popperOffsets: popperOffsets$1,
     preventOverflow: preventOverflow$1
   });
-
   const NAME$9 = 'dropdown';
   const DATA_KEY$8 = 'bs.dropdown';
   const EVENT_KEY$8 = `.${DATA_KEY$8}`;
@@ -2947,23 +2787,18 @@
       this._menu = this._getMenuElement();
       this._inNavbar = this._detectNavbar();
     }
-
     static get Default() {
       return Default$8;
     }
-
     static get DefaultType() {
       return DefaultType$8;
     }
-
     static get NAME() {
       return NAME$9;
     }
-
     toggle() {
       return this._isShown() ? this.hide() : this.show();
     }
-
     show() {
       if (isDisabled(this._element) || this._isShown(this._menu)) {
         return;
@@ -3012,7 +2847,6 @@
         this._popper.update();
       }
     }
-
     _completeHide(relatedTarget) {
       const hideEvent = EventHandler.trigger(this._element, EVENT_HIDE$4, relatedTarget);
 
@@ -3037,13 +2871,11 @@
         ...config
       };
       typeCheckConfig(NAME$9, config, this.constructor.DefaultType);
-
       if (typeof config.reference === 'object' && !isElement$1(config.reference) && typeof config.reference.getBoundingClientRect !== 'function') {
         throw new TypeError(`${NAME$9.toUpperCase()}: Option "reference" provided type "object" without a required "getBoundingClientRect" method.`);
       }
       return config;
     }
-
     _createPopper(parent) {
       if (typeof Popper === 'undefined') {
         throw new TypeError('Bootstrap\'s dropdowns require Popper (https://popper.js.org)');
@@ -3056,7 +2888,6 @@
       } else if (typeof this._config.reference === 'object') {
         referenceElement = this._config.reference;
       }
-
       const popperConfig = this._getPopperConfig();
       const isDisplayStatic = popperConfig.modifiers.find(modifier => modifier.name === 'applyStyles' && modifier.enabled === false);
       this._popper = createPopper(referenceElement, this._menu, popperConfig);
@@ -3064,15 +2895,12 @@
         Manipulator.setDataAttribute(this._menu, 'popper', 'static');
       }
     }
-
     _isShown(element = this._element) {
       return element.classList.contains(CLASS_NAME_SHOW$6);
     }
-
     _getMenuElement() {
       return SelectorEngine.next(this._element, SELECTOR_MENU)[0];
     }
-
     _getPlacement() {
       const parentDropdown = this._element.parentNode;
       if (parentDropdown.classList.contains(CLASS_NAME_DROPEND)) {
@@ -3087,7 +2915,6 @@
       }
       return isEnd ? PLACEMENT_BOTTOMEND : PLACEMENT_BOTTOM;
     }
-
     _detectNavbar() {
       return this._element.closest(`.${CLASS_NAME_NAVBAR}`) !== null;
     }
@@ -3105,7 +2932,6 @@
       }
       return offset;
     }
-
     _getPopperConfig() {
       const defaultBsPopperConfig = {
         placement: this._getPlacement(),
@@ -3121,7 +2947,6 @@
           }
         }]
       };
-
       if (this._config.display === 'static') {
         defaultBsPopperConfig.modifiers = [{
           name: 'applyStyles',
@@ -3143,7 +2968,6 @@
       }
       getNextActiveElement(items, target, key === ARROW_DOWN_KEY, !items.includes(target)).focus();
     }
-
     static jQueryInterface(config) {
       return this.each(function () {
         const data = Dropdown.getOrCreateInstance(this, config);
@@ -3156,7 +2980,6 @@
         data[config]();
       });
     }
-
     static clearMenus(event) {
       if (event && (event.button === RIGHT_MOUSE_BUTTON || event.type === 'keyup' && event.key !== TAB_KEY$1)) {
         return;
@@ -3189,11 +3012,9 @@
         context._completeHide(relatedTarget);
       }
     }
-
     static getParentFromElement(element) {
       return getElementFromSelector(element) || element.parentNode;
     }
-
     static dataApiKeydownHandler(event) {
       if (/input|textarea/i.test(event.target.tagName) ? event.key === SPACE_KEY || event.key !== ESCAPE_KEY$2 && (event.key !== ARROW_DOWN_KEY && event.key !== ARROW_UP_KEY || event.target.closest(SELECTOR_MENU)) : !REGEXP_KEYDOWN.test(event.key)) {
         return;
@@ -3225,7 +3046,6 @@
       }
     }
   }
-
   EventHandler.on(document, EVENT_KEYDOWN_DATA_API, SELECTOR_DATA_TOGGLE$3, Dropdown.dataApiKeydownHandler);
   EventHandler.on(document, EVENT_KEYDOWN_DATA_API, SELECTOR_MENU, Dropdown.dataApiKeydownHandler);
   EventHandler.on(document, EVENT_CLICK_DATA_API$3, Dropdown.clearMenus);
@@ -3234,22 +3054,17 @@
     event.preventDefault();
     Dropdown.getOrCreateInstance(this).toggle();
   });
-
   defineJQueryPlugin(Dropdown);
-
   const SELECTOR_FIXED_CONTENT = '.fixed-top, .fixed-bottom, .is-fixed, .sticky-top';
   const SELECTOR_STICKY_CONTENT = '.sticky-top';
-
   class ScrollBarHelper {
     constructor() {
       this._element = document.body;
     }
-
     getWidth() {
       const documentWidth = document.documentElement.clientWidth;
       return Math.abs(window.innerWidth - documentWidth);
     }
-
     hide() {
       const width = this.getWidth();
       this._disableOverFlow();
@@ -3257,12 +3072,10 @@
       this._setElementAttributes(SELECTOR_FIXED_CONTENT, 'paddingRight', calculatedValue => calculatedValue + width);
       this._setElementAttributes(SELECTOR_STICKY_CONTENT, 'marginRight', calculatedValue => calculatedValue - width);
     }
-
     _disableOverFlow() {
       this._saveInitialAttribute(this._element, 'overflow');
       this._element.style.overflow = 'hidden';
     }
-
     _setElementAttributes(selector, styleProp, callback) {
       const scrollbarWidth = this.getWidth();
       const manipulationCallBack = element => {
@@ -3275,14 +3088,12 @@
       };
       this._applyManipulationCallback(selector, manipulationCallBack);
     }
-
     reset() {
       this._resetElementAttributes(this._element, 'overflow');
       this._resetElementAttributes(this._element, 'paddingRight');
       this._resetElementAttributes(SELECTOR_FIXED_CONTENT, 'paddingRight');
       this._resetElementAttributes(SELECTOR_STICKY_CONTENT, 'marginRight');
     }
-
     _saveInitialAttribute(element, styleProp) {
       const actualValue = element.style[styleProp];
 
@@ -3290,7 +3101,6 @@
         Manipulator.setDataAttribute(element, styleProp, actualValue);
       }
     }
-
     _resetElementAttributes(selector, styleProp) {
       const manipulationCallBack = element => {
         const value = Manipulator.getDataAttribute(element, styleProp);
@@ -3303,7 +3113,6 @@
       };
       this._applyManipulationCallback(selector, manipulationCallBack);
     }
-
     _applyManipulationCallback(selector, callBack) {
       if (isElement$1(selector)) {
         callBack(selector);
@@ -3311,12 +3120,10 @@
         SelectorEngine.find(selector, this._element).forEach(callBack);
       }
     }
-
     isOverflowing() {
       return this.getWidth() > 0;
     }
   }
-  
   const Default$7 = {
     className: 'modal-backdrop',
     isVisible: true,
@@ -3335,14 +3142,12 @@
   const CLASS_NAME_FADE$4 = 'fade';
   const CLASS_NAME_SHOW$5 = 'show';
   const EVENT_MOUSEDOWN = `mousedown.bs.${NAME$8}`;
-
   class Backdrop {
     constructor(config) {
       this._config = this._getConfig(config);
       this._isAppended = false;
       this._element = null;
     }
-
     show(callback) {
       if (!this._config.isVisible) {
         execute(callback);
@@ -3370,8 +3175,6 @@
         execute(callback);
       });
     }
-
-
     _getElement() {
       if (!this._element) {
         const backdrop = document.createElement('div');
@@ -3383,7 +3186,6 @@
       }
       return this._element;
     }
-
     _getConfig(config) {
       config = { ...Default$7,
         ...(typeof config === 'object' ? config : {})
@@ -3392,7 +3194,6 @@
       typeCheckConfig(NAME$8, config, DefaultType$7);
       return config;
     }
-
     _append() {
       if (this._isAppended) {
         return;
@@ -3403,7 +3204,6 @@
       });
       this._isAppended = true;
     }
-
     dispose() {
       if (!this._isAppended) {
         return;
@@ -3413,13 +3213,10 @@
       this._element.remove();
       this._isAppended = false;
     }
-
     _emulateAnimation(callback) {
       executeAfterTransition(callback, this._getElement(), this._config.isAnimated);
     }
-
   }
-
   const Default$6 = {
     trapElement: null,
     autofocus: true
@@ -3436,20 +3233,17 @@
   const TAB_KEY = 'Tab';
   const TAB_NAV_FORWARD = 'forward';
   const TAB_NAV_BACKWARD = 'backward';
-
   class FocusTrap {
     constructor(config) {
       this._config = this._getConfig(config);
       this._isActive = false;
       this._lastTabNavDirection = null;
     }
-
     activate() {
       const {
         trapElement,
         autofocus
       } = this._config;
-
       if (this._isActive) {
         return;
       }
@@ -3461,16 +3255,13 @@
       EventHandler.on(document, EVENT_KEYDOWN_TAB, event => this._handleKeydown(event));
       this._isActive = true;
     }
-
     deactivate() {
       if (!this._isActive) {
         return;
       }
-
       this._isActive = false;
       EventHandler.off(document, EVENT_KEY$7);
     }
-
     _handleFocusin(event) {
       const {
         target
@@ -3490,14 +3281,12 @@
         elements[0].focus();
       }
     }
-
     _handleKeydown(event) {
       if (event.key !== TAB_KEY) {
         return;
       }
       this._lastTabNavDirection = event.shiftKey ? TAB_NAV_BACKWARD : TAB_NAV_FORWARD;
     }
-
     _getConfig(config) {
       config = { ...Default$6,
         ...(typeof config === 'object' ? config : {})
@@ -3506,7 +3295,6 @@
       return config;
     }
   }
-
   const NAME$6 = 'modal';
   const DATA_KEY$6 = 'bs.modal';
   const EVENT_KEY$6 = `.${DATA_KEY$6}`;
@@ -3541,7 +3329,6 @@
   const SELECTOR_DIALOG = '.modal-dialog';
   const SELECTOR_MODAL_BODY = '.modal-body';
   const SELECTOR_DATA_TOGGLE$2 = '[data-bs-toggle="modal"]';
- 
   class Modal extends BaseComponent {
     constructor(element, config) {
       super(element);
@@ -3554,19 +3341,15 @@
       this._isTransitioning = false;
       this._scrollBar = new ScrollBarHelper();
     }
-
     static get Default() {
       return Default$5;
     }
-
     static get NAME() {
       return NAME$6;
     }
-
     toggle(relatedTarget) {
       return this._isShown ? this.hide() : this.show(relatedTarget);
     }
-
     show(relatedTarget) {
       if (this._isShown || this._isTransitioning) {
         return;
@@ -3586,7 +3369,6 @@
       this._adjustDialog();
       this._setEscapeEvent();
       this._setResizeEvent();
-
       EventHandler.on(this._dialog, EVENT_MOUSEDOWN_DISMISS, () => {
         EventHandler.one(this._element, EVENT_MOUSEUP_DISMISS, event => {
           if (event.target === this._element) {
@@ -3594,10 +3376,8 @@
           }
         });
       });
-
       this._showBackdrop(() => this._showElement(relatedTarget));
     }
-
     hide() {
       if (!this._isShown || this._isTransitioning) {
         return;
@@ -3619,7 +3399,6 @@
       EventHandler.off(this._dialog, EVENT_MOUSEDOWN_DISMISS);
       this._queueCallback(() => this._hideModal(), this._element, isAnimated);
     }
-
     dispose() {
       [window, this._dialog].forEach(htmlElement => EventHandler.off(htmlElement, EVENT_KEY$6));
       this._backdrop.dispose();
@@ -3637,13 +3416,11 @@
         isAnimated: this._isAnimated()
       });
     }
-
     _initializeFocusTrap() {
       return new FocusTrap({
         trapElement: this._element
       });
     }
-
     _getConfig(config) {
       config = { ...Default$5,
         ...Manipulator.getDataAttributes(this._element),
@@ -3652,7 +3429,6 @@
       typeCheckConfig(NAME$6, config, DefaultType$5);
       return config;
     }
-
     _showElement(relatedTarget) {
       const isAnimated = this._isAnimated();
       const modalBody = SelectorEngine.findOne(SELECTOR_MODAL_BODY, this._dialog);
@@ -3682,7 +3458,6 @@
       };
       this._queueCallback(transitionComplete, this._dialog, isAnimated);
     }
-
     _setEscapeEvent() {
       if (this._isShown) {
         EventHandler.on(this._element, EVENT_KEYDOWN_DISMISS$1, event => {
@@ -3697,7 +3472,6 @@
         EventHandler.off(this._element, EVENT_KEYDOWN_DISMISS$1);
       }
     }
-
     _setResizeEvent() {
       if (this._isShown) {
         EventHandler.on(window, EVENT_RESIZE, () => this._adjustDialog());
@@ -3705,7 +3479,6 @@
         EventHandler.off(window, EVENT_RESIZE);
       }
     }
-
     _hideModal() {
       this._element.style.display = 'none';
       this._element.setAttribute('aria-hidden', true);
@@ -3719,7 +3492,6 @@
         EventHandler.trigger(this._element, EVENT_HIDDEN$3);
       });
     }
-
     _showBackdrop(callback) {
       EventHandler.on(this._element, EVENT_CLICK_DISMISS, event => {
         if (this._ignoreBackdropClick) {
@@ -3737,11 +3509,9 @@
       });
       this._backdrop.show(callback);
     }
-
     _isAnimated() {
       return this._element.classList.contains(CLASS_NAME_FADE$3);
     }
-
     _triggerBackdropTransition() {
       const hideEvent = EventHandler.trigger(this._element, EVENT_HIDE_PREVENTED);
       if (hideEvent.defaultPrevented) {
@@ -3770,7 +3540,6 @@
       }, this._dialog);
       this._element.focus();
     }
-
     _adjustDialog() {
       const isModalOverflowing = this._element.scrollHeight > document.documentElement.clientHeight;
       const scrollbarWidth = this._scrollBar.getWidth();
@@ -3782,13 +3551,10 @@
         this._element.style.paddingRight = `${scrollbarWidth}px`;
       }
     }
-
     _resetAdjustments() {
       this._element.style.paddingLeft = '';
       this._element.style.paddingRight = '';
     }
-
-
     static jQueryInterface(config, relatedTarget) {
       return this.each(function () {
         const data = Modal.getOrCreateInstance(this, config);
@@ -3808,7 +3574,6 @@
     if (['A', 'AREA'].includes(this.tagName)) {
       event.preventDefault();
     }
-
     EventHandler.one(target, EVENT_SHOW$3, showEvent => {
       if (showEvent.defaultPrevented) {
         return;
@@ -3828,7 +3593,6 @@
   });
   enableDismissTrigger(Modal);
   defineJQueryPlugin(Modal);
-
   const NAME$5 = 'offcanvas';
   const DATA_KEY$5 = 'bs.offcanvas';
   const EVENT_KEY$5 = `.${DATA_KEY$5}`;
@@ -3855,7 +3619,6 @@
   const EVENT_CLICK_DATA_API$1 = `click${EVENT_KEY$5}${DATA_API_KEY$2}`;
   const EVENT_KEYDOWN_DISMISS = `keydown.dismiss${EVENT_KEY$5}`;
   const SELECTOR_DATA_TOGGLE$1 = '[data-bs-toggle="offcanvas"]';
-
   class Offcanvas extends BaseComponent {
     constructor(element, config) {
       super(element);
@@ -3865,11 +3628,9 @@
       this._focustrap = this._initializeFocusTrap();
       this._addEventListeners();
     }
-
     static get NAME() {
       return NAME$5;
     }
-
     static get Default() {
       return Default$4;
     }
@@ -3877,7 +3638,6 @@
     toggle(relatedTarget) {
       return this._isShown ? this.hide() : this.show(relatedTarget);
     }
-
     show(relatedTarget) {
       if (this._isShown) {
         return;
@@ -3908,7 +3668,6 @@
       };
       this._queueCallback(completeCallBack, this._element, true);
     }
-
     hide() {
       if (!this._isShown) {
         return;
@@ -3932,16 +3691,13 @@
         }
         EventHandler.trigger(this._element, EVENT_HIDDEN$2);
       };
-
       this._queueCallback(completeCallback, this._element, true);
     }
-
     dispose() {
       this._backdrop.dispose();
       this._focustrap.deactivate();
       super.dispose();
     }
-
     _getConfig(config) {
       config = { ...Default$4,
         ...Manipulator.getDataAttributes(this._element),
@@ -3960,13 +3716,11 @@
         clickCallback: () => this.hide()
       });
     }
-
     _initializeFocusTrap() {
       return new FocusTrap({
         trapElement: this._element
       });
     }
-
     _addEventListeners() {
       EventHandler.on(this._element, EVENT_KEYDOWN_DISMISS, event => {
         if (this._config.keyboard && event.key === ESCAPE_KEY) {
@@ -3974,7 +3728,6 @@
         }
       });
     }
-
     static jQueryInterface(config) {
       return this.each(function () {
         const data = Offcanvas.getOrCreateInstance(this, config);
@@ -3988,7 +3741,6 @@
       });
     }
   }
-
   EventHandler.on(document, EVENT_CLICK_DATA_API$1, SELECTOR_DATA_TOGGLE$1, function (event) {
     const target = getElementFromSelector(this);
     if (['A', 'AREA'].includes(this.tagName)) {
@@ -4012,7 +3764,6 @@
   EventHandler.on(window, EVENT_LOAD_DATA_API$1, () => SelectorEngine.find(OPEN_SELECTOR).forEach(el => Offcanvas.getOrCreateInstance(el).show()));
   enableDismissTrigger(Offcanvas);
   defineJQueryPlugin(Offcanvas);
-
   const uriAttributes = new Set(['background', 'cite', 'href', 'itemtype', 'longdesc', 'poster', 'src', 'xlink:href']);
   const ARIA_ATTRIBUTE_PATTERN = /^aria-[\w-]*$/i;
   const SAFE_URL_PATTERN = /^(?:(?:https?|mailto|ftp|tel|file|sms):|[^#&/:?]*(?:[#/?]|$))/i;
@@ -4033,7 +3784,6 @@
     }
     return false;
   };
-
   const DefaultAllowlist = {
     '*': ['class', 'dir', 'id', 'lang', 'role', ARIA_ATTRIBUTE_PATTERN],
     a: ['target', 'href', 'title', 'rel'],
@@ -4093,7 +3843,6 @@
     }
     return createdDocument.body.innerHTML;
   }
-
   const NAME$4 = 'tooltip';
   const DATA_KEY$4 = 'bs.tooltip';
   const EVENT_KEY$4 = `.${DATA_KEY$4}`;
@@ -4183,11 +3932,9 @@
       this.tip = null;
       this._setListeners();
     }
-
     static get Default() {
       return Default$3;
     }
-
     static get NAME() {
       return NAME$4;
     }
@@ -4199,7 +3946,6 @@
     static get DefaultType() {
       return DefaultType$3;
     }
-
     enable() {
       this._isEnabled = true;
     }
@@ -4207,11 +3953,9 @@
     disable() {
       this._isEnabled = false;
     }
-
     toggleEnabled() {
       this._isEnabled = !this._isEnabled;
     }
-
     toggle(event) {
       if (!this._isEnabled) {
         return;
@@ -4232,7 +3976,6 @@
         this._enter(null, this);
       }
     }
-
     dispose() {
       clearTimeout(this._timeout);
       EventHandler.off(this._element.closest(SELECTOR_MODAL), EVENT_MODAL_HIDE, this._hideModalHandler);
@@ -4243,7 +3986,6 @@
       this._disposePopper();
       super.dispose();
     }
-
     show() {
       if (this._element.style.display === 'none') {
         throw new Error('Please use show on visible elements');
@@ -4296,7 +4038,6 @@
           EventHandler.on(element, 'mouseover', noop);
         });
       }
-
       const complete = () => {
         const prevHoverState = this._hoverState;
         this._hoverState = null;
@@ -4308,12 +4049,10 @@
       const isAnimated = this.tip.classList.contains(CLASS_NAME_FADE$2);
       this._queueCallback(complete, this.tip, isAnimated);
     }
-
     hide() {
       if (!this._popper) {
         return;
       }
-
       const tip = this.getTipElement();
       const complete = () => {
         if (this._isWithActiveTrigger()) {
@@ -4327,7 +4066,6 @@
         EventHandler.trigger(this._element, this.constructor.Event.HIDDEN);
         this._disposePopper();
       };
-
       const hideEvent = EventHandler.trigger(this._element, this.constructor.Event.HIDE);
       if (hideEvent.defaultPrevented) {
         return;
@@ -4343,13 +4081,11 @@
       this._queueCallback(complete, this.tip, isAnimated);
       this._hoverState = '';
     }
-
     update() {
       if (this._popper !== null) {
         this._popper.update();
       }
     }
-
     isWithContent() {
       return Boolean(this.getTitle());
     }
@@ -4365,11 +4101,9 @@
       this.tip = tip;
       return this.tip;
     }
-
     setContent(tip) {
       this._sanitizeAndSetContent(tip, this.getTitle(), SELECTOR_TOOLTIP_INNER);
     }
-
     _sanitizeAndSetContent(template, content, selector) {
       const templateElement = SelectorEngine.findOne(selector, template);
 
@@ -4379,7 +4113,6 @@
       }
       this.setElementContent(templateElement, content);
     }
-
     setElementContent(element, content) {
       if (element === null) {
         return;
@@ -4405,12 +4138,10 @@
         element.textContent = content;
       }
     }
-
     getTitle() {
       const title = this._element.getAttribute('data-bs-original-title') || this._config.title;
       return this._resolvePossibleFunction(title);
     }
-
     updateAttachment(attachment) {
       if (attachment === 'right') {
         return 'end';
@@ -4420,11 +4151,9 @@
       }
       return attachment;
     }
-
     _initializeOnDelegatedTarget(event, context) {
       return context || this.constructor.getOrCreateInstance(event.delegateTarget, this._getDelegateConfig());
     }
-
     _getOffset() {
       const {
         offset
@@ -4437,11 +4166,9 @@
       }
       return offset;
     }
-
     _resolvePossibleFunction(content) {
       return typeof content === 'function' ? content.call(this._element) : content;
     }
-
     _getPopperConfig(attachment) {
       const defaultBsPopperConfig = {
         placement: attachment,
@@ -4481,15 +4208,12 @@
         ...(typeof this._config.popperConfig === 'function' ? this._config.popperConfig(defaultBsPopperConfig) : this._config.popperConfig)
       };
     }
-
     _addAttachmentClass(attachment) {
       this.getTipElement().classList.add(`${this._getBasicClassPrefix()}-${this.updateAttachment(attachment)}`);
     }
-
     _getAttachment(placement) {
       return AttachmentMap[placement.toUpperCase()];
     }
-
     _setListeners() {
       const triggers = this._config.trigger.split(' ');
       triggers.forEach(trigger => {
@@ -4502,13 +4226,11 @@
           EventHandler.on(this._element, eventOut, this._config.selector, event => this._leave(event));
         }
       });
-
       this._hideModalHandler = () => {
         if (this._element) {
           this.hide();
         }
       };
-
       EventHandler.on(this._element.closest(SELECTOR_MODAL), EVENT_MODAL_HIDE, this._hideModalHandler);
 
       if (this._config.selector) {
@@ -4520,7 +4242,6 @@
         this._fixTitle();
       }
     }
-
     _fixTitle() {
       const title = this._element.getAttribute('title');
       const originalTitleType = typeof this._element.getAttribute('data-bs-original-title');
@@ -4532,7 +4253,6 @@
         this._element.setAttribute('title', '');
       }
     }
-
     _enter(event, context) {
       context = this._initializeOnDelegatedTarget(event, context);
       if (event) {
@@ -4554,7 +4274,6 @@
         }
       }, context._config.delay.show);
     }
-
     _leave(event, context) {
       context = this._initializeOnDelegatedTarget(event, context);
       if (event) {
@@ -4575,7 +4294,6 @@
         }
       }, context._config.delay.hide);
     }
-
     _isWithActiveTrigger() {
       for (const trigger in this._activeTrigger) {
         if (this._activeTrigger[trigger]) {
@@ -4584,7 +4302,6 @@
       }
       return false;
     }
-
     _getConfig(config) {
       const dataAttributes = Manipulator.getDataAttributes(this._element);
       Object.keys(dataAttributes).forEach(dataAttr => {
@@ -4615,7 +4332,6 @@
       }
       return config;
     }
-
     _getDelegateConfig() {
       const config = {};
       for (const key in this._config) {
@@ -4625,7 +4341,6 @@
       }
       return config;
     }
-
     _cleanTipClass() {
       const tip = this.getTipElement();
       const basicClassPrefixRegex = new RegExp(`(^|\\s)${this._getBasicClassPrefix()}\\S+`, 'g');
@@ -4634,11 +4349,9 @@
         tabClass.map(token => token.trim()).forEach(tClass => tip.classList.remove(tClass));
       }
     }
-
     _getBasicClassPrefix() {
       return CLASS_PREFIX$1;
     }
-
     _handlePopperPlacementChange(popperData) {
       const {
         state
@@ -4650,15 +4363,12 @@
       this._cleanTipClass();
       this._addAttachmentClass(this._getAttachment(state.placement));
     }
-
     _disposePopper() {
       if (this._popper) {
         this._popper.destroy();
         this._popper = null;
       }
     }
-
-
     static jQueryInterface(config) {
       return this.each(function () {
         const data = Tooltip.getOrCreateInstance(this, config);
@@ -4672,7 +4382,6 @@
     }
   }
   defineJQueryPlugin(Tooltip);
-
   const NAME$3 = 'popover';
   const DATA_KEY$3 = 'bs.popover';
   const EVENT_KEY$3 = `.${DATA_KEY$3}`;
@@ -4702,7 +4411,6 @@
   const SELECTOR_TITLE = '.popover-header';
   const SELECTOR_CONTENT = '.popover-body';
   class Popover extends Tooltip {
-    // Getters
     static get Default() {
       return Default$2;
     }
@@ -4715,8 +4423,6 @@
     static get DefaultType() {
       return DefaultType$2;
     }
-
-
     isWithContent() {
       return this.getTitle() || this._getContent();
     }
@@ -4724,16 +4430,12 @@
       this._sanitizeAndSetContent(tip, this.getTitle(), SELECTOR_TITLE);
       this._sanitizeAndSetContent(tip, this._getContent(), SELECTOR_CONTENT);
     }
-
     _getContent() {
       return this._resolvePossibleFunction(this._config.content);
     }
-
     _getBasicClassPrefix() {
       return CLASS_PREFIX;
     }
-
-
     static jQueryInterface(config) {
       return this.each(function () {
         const data = Popover.getOrCreateInstance(this, config);
@@ -4747,7 +4449,6 @@
     }
   }
   defineJQueryPlugin(Popover);
-
   const NAME$2 = 'scrollspy';
   const DATA_KEY$2 = 'bs.scrollspy';
   const EVENT_KEY$2 = `.${DATA_KEY$2}`;
@@ -4777,7 +4478,6 @@
   const SELECTOR_DROPDOWN_TOGGLE$1 = '.dropdown-toggle';
   const METHOD_OFFSET = 'offset';
   const METHOD_POSITION = 'position';
-
   class ScrollSpy extends BaseComponent {
     constructor(element, config) {
       super(element);
@@ -4791,14 +4491,12 @@
       this.refresh();
       this._process();
     }
-
     static get Default() {
       return Default$1;
     }
     static get NAME() {
       return NAME$2;
     }
-
     refresh() {
       const autoMethod = this._scrollElement === this._scrollElement.window ? METHOD_OFFSET : METHOD_POSITION;
       const offsetMethod = this._config.method === 'auto' ? autoMethod : this._config.method;
@@ -4827,7 +4525,6 @@
       EventHandler.off(this._scrollElement, EVENT_KEY$2);
       super.dispose();
     }
-
     _getConfig(config) {
       config = { ...Default$1,
         ...Manipulator.getDataAttributes(this._element),
@@ -4837,19 +4534,15 @@
       typeCheckConfig(NAME$2, config, DefaultType$1);
       return config;
     }
-
     _getScrollTop() {
       return this._scrollElement === window ? this._scrollElement.pageYOffset : this._scrollElement.scrollTop;
     }
-
     _getScrollHeight() {
       return this._scrollElement.scrollHeight || Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
     }
-
     _getOffsetHeight() {
       return this._scrollElement === window ? window.innerHeight : this._scrollElement.getBoundingClientRect().height;
     }
-
     _process() {
       const scrollTop = this._getScrollTop() + this._config.offset;
       const scrollHeight = this._getScrollHeight();
@@ -4877,7 +4570,6 @@
         }
       }
     }
-
     _activate(target) {
       this._activeTarget = target;
       this._clear();
@@ -4901,7 +4593,6 @@
     _clear() {
       SelectorEngine.find(SELECTOR_LINK_ITEMS, this._config.target).filter(node => node.classList.contains(CLASS_NAME_ACTIVE$1)).forEach(node => node.classList.remove(CLASS_NAME_ACTIVE$1));
     }
-
     static jQueryInterface(config) {
       return this.each(function () {
         const data = ScrollSpy.getOrCreateInstance(this, config);
@@ -4915,13 +4606,10 @@
       });
     }
   }
-
   EventHandler.on(window, EVENT_LOAD_DATA_API, () => {
     SelectorEngine.find(SELECTOR_DATA_SPY).forEach(spy => new ScrollSpy(spy));
   });
-  
   defineJQueryPlugin(ScrollSpy);
-
   const NAME$1 = 'tab';
   const DATA_KEY$1 = 'bs.tab';
   const EVENT_KEY$1 = `.${DATA_KEY$1}`;
@@ -4942,12 +4630,10 @@
   const SELECTOR_DATA_TOGGLE = '[data-bs-toggle="tab"], [data-bs-toggle="pill"], [data-bs-toggle="list"]';
   const SELECTOR_DROPDOWN_TOGGLE = '.dropdown-toggle';
   const SELECTOR_DROPDOWN_ACTIVE_CHILD = ':scope > .dropdown-menu .active';
- 
   class Tab extends BaseComponent {
     static get NAME() {
       return NAME$1;
     }
-
     show() {
       if (this._element.parentNode && this._element.parentNode.nodeType === Node.ELEMENT_NODE && this._element.classList.contains(CLASS_NAME_ACTIVE)) {
         return;
@@ -4984,7 +4670,6 @@
         complete();
       }
     }
-
     _activate(element, container, callback) {
       const activeElements = container && (container.nodeName === 'UL' || container.nodeName === 'OL') ? SelectorEngine.find(SELECTOR_ACTIVE_UL, container) : SelectorEngine.children(container, SELECTOR_ACTIVE);
       const active = activeElements[0];
@@ -4997,7 +4682,6 @@
         complete();
       }
     }
-
     _transitionComplete(element, active, callback) {
       if (active) {
         active.classList.remove(CLASS_NAME_ACTIVE);
@@ -5032,8 +4716,6 @@
         callback();
       }
     }
-
-
     static jQueryInterface(config) {
       return this.each(function () {
         const data = Tab.getOrCreateInstance(this);
@@ -5046,8 +4728,6 @@
       });
     }
   }
-
-
   EventHandler.on(document, EVENT_CLICK_DATA_API, SELECTOR_DATA_TOGGLE, function (event) {
     if (['A', 'AREA'].includes(this.tagName)) {
       event.preventDefault();
@@ -5059,8 +4739,6 @@
     data.show();
   });
   defineJQueryPlugin(Tab);
-
-
   const NAME = 'toast';
   const DATA_KEY = 'bs.toast';
   const EVENT_KEY = `.${DATA_KEY}`;
@@ -5093,25 +4771,19 @@
       this._timeout = null;
       this._hasMouseInteraction = false;
       this._hasKeyboardInteraction = false;
-
       this._setListeners();
     }
-
     static get DefaultType() {
       return DefaultType;
     }
-
     static get Default() {
       return Default;
     }
-
     static get NAME() {
       return NAME;
     }
-
     show() {
       const showEvent = EventHandler.trigger(this._element, EVENT_SHOW);
-
       if (showEvent.defaultPrevented) {
         return;
       }
@@ -5147,7 +4819,6 @@
       this._element.classList.add(CLASS_NAME_SHOWING);
       this._queueCallback(complete, this._element, this._config.animation);
     }
-
     dispose() {
       this._clearTimeout();
       if (this._element.classList.contains(CLASS_NAME_SHOW)) {
@@ -5155,7 +4826,6 @@
       }
       super.dispose();
     }
-
     _getConfig(config) {
       config = { ...Default,
         ...Manipulator.getDataAttributes(this._element),
@@ -5164,7 +4834,6 @@
       typeCheckConfig(NAME, config, this.constructor.DefaultType);
       return config;
     }
-
     _maybeScheduleHide() {
       if (!this._config.autohide) {
         return;
@@ -5176,7 +4845,6 @@
         this.hide();
       }, this._config.delay);
     }
-
     _onInteraction(event, isInteracting) {
       switch (event.type) {
         case 'mouseover':
@@ -5192,27 +4860,22 @@
         this._clearTimeout();
         return;
       }
-
       const nextElement = event.relatedTarget;
       if (this._element === nextElement || this._element.contains(nextElement)) {
         return;
       }
       this._maybeScheduleHide();
     }
-
     _setListeners() {
       EventHandler.on(this._element, EVENT_MOUSEOVER, event => this._onInteraction(event, true));
       EventHandler.on(this._element, EVENT_MOUSEOUT, event => this._onInteraction(event, false));
       EventHandler.on(this._element, EVENT_FOCUSIN, event => this._onInteraction(event, true));
       EventHandler.on(this._element, EVENT_FOCUSOUT, event => this._onInteraction(event, false));
     }
-
     _clearTimeout() {
       clearTimeout(this._timeout);
       this._timeout = null;
     }
-
-
     static jQueryInterface(config) {
       return this.each(function () {
         const data = Toast.getOrCreateInstance(this, config);
@@ -5226,9 +4889,7 @@
     }
   }
   enableDismissTrigger(Toast);
-  
   defineJQueryPlugin(Toast);
-
   const index_umd = {
     Alert,
     Button,
@@ -5243,8 +4904,5 @@
     Toast,
     Tooltip
   };
-
   return index_umd;
-
 }));
-
